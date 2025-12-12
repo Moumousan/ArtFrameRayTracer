@@ -2,6 +2,7 @@
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 
+// swift-tools-version: 6.2
 import PackageDescription
 
 let package = Package(
@@ -13,34 +14,32 @@ let package = Package(
     products: [
         .library(
             name: "ArtFrameRayTracer",
-            targets: ["ArtFrameRayTracer"]   // ← 外部に見せるのはこの1つ
+            targets: ["ArtFrameRayTracer"]
         )
     ],
     targets: [
-        // 内部ターゲット：外に見せない
+        // 共通型・セッション・protocol
         .target(
             name: "ArtFrameCore",
             path: "Sources/ArtFrameCore"
         ),
 
+        // CPU レンダラー
         .target(
             name: "ArtFrameRayTracerCPU",
             dependencies: ["ArtFrameCore"],
             path: "Sources/ArtFrameRayTracerCPU"
         ),
 
+        // Metal レンダラー（中身はあとで）
         .target(
             name: "ArtFrameRayTracerMetal",
             dependencies: ["ArtFrameCore"],
-            path: "Sources/ArtFrameRayTracerMetal",
-            exclude: [],   // 今は空フォルダでOK
-            resources: [
-                // Metal シェーダーを置いたらここに追加
-                // .process("Shaders")
-            ]
+            path: "Sources/ArtFrameRayTracerMetal"
+            // resources: [.process("Shaders")] などは後で
         ),
 
-        // 外部公開API（Factory / Protocol）
+        // 公開 Facade
         .target(
             name: "ArtFrameRayTracer",
             dependencies: [

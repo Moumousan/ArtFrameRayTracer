@@ -1,20 +1,26 @@
 //
-//  SimpleCompositingRenderer.swift
-//  ArtFrameRayTracerUnit
+//  CPURayTracerRenderer.swift
+//  ArtFrameRayTracer
 //
 //  Created by SNI on 2025/12/10.
 //
 
-// Sources/ArtFrameRayTracer/SimpleCompositingRenderer.swift
+// Sources/ArtFrameRayTracer/CPURayTracerRenderer.swift
+
+//
+//  CPURayTracerRenderer.swift
+//
 
 import CoreGraphics
 import CoreImage
 import ArtFrameCore
 
-@available(iOS 13.0, *)
-public final class SimpleCompositingRenderer: ArtFrameRayTracerEngine {
+@available(iOS 13.0, macOS 11.0, *)
+public final class CPURayTracerRenderer: ArtFrameRenderer {
 
     public init() {}
+
+    // MARK: - Public API (from ArtFrameRenderer protocol)
 
     public func renderPreview(
         session: FramedPhotoSession,
@@ -29,6 +35,8 @@ public final class SimpleCompositingRenderer: ArtFrameRayTracerEngine {
     ) throws -> CGImage {
         try render(session: session, targetSize: targetSize, quality: .final)
     }
+
+    // MARK: - Internal
 
     private enum Quality {
         case preview
@@ -56,11 +64,11 @@ public final class SimpleCompositingRenderer: ArtFrameRayTracerEngine {
             throw RendererError.contextCreationFailed
         }
 
-        // 背景クリア
+        // 背景
         ctx.setFillColor(CGColor(gray: 0.1, alpha: 1.0))
         ctx.fill(CGRect(origin: .zero, size: targetSize))
 
-        // v0.1 の段階ではダミーとして中心にグラデーションを描いておく
+        // v0.1 仮実装：簡易ライティング（グラデーション）
         let rect = CGRect(origin: .zero, size: targetSize)
         drawFakeLighting(in: ctx, rect: rect, lighting: session.lighting)
 
@@ -75,7 +83,6 @@ public final class SimpleCompositingRenderer: ArtFrameRayTracerEngine {
         rect: CGRect,
         lighting: LightingConfig
     ) {
-        // ここでは presetID を見て簡易なグラデーションを書く
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let colors: [CGColor] = [
             CGColor(gray: 0.2, alpha: 1.0),

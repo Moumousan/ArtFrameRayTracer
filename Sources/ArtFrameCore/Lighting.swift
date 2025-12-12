@@ -9,7 +9,7 @@
 // Sources/ArtFrameRayTracer/Lighting.swift
 
 import simd
-import ArtFrameCore
+
 
 public enum LightingPreset: String, CaseIterable {
     case montblancLeftTop   // 左上モンブラン
