@@ -40,6 +40,7 @@ public struct OuterFrameStyle: Identifiable, Hashable, PackableFramePart, Codabl
     public var width: CGFloat   // 絵に対する割合
     public var depth: CGFloat   // 奥行き
     public var materialID: String
+    public var sectionProfileID: String? // 断面プロファイルID（工房アプリで作成。nilなら従来どおりの簡易形状）
 
     public init(
         id: String,
@@ -48,7 +49,8 @@ public struct OuterFrameStyle: Identifiable, Hashable, PackableFramePart, Codabl
         name: String,
         width: CGFloat,
         depth: CGFloat,
-        materialID: String
+        materialID: String,
+        sectionProfileID: String? = nil
     ) {
         self.id = id
         self.packID = packID
@@ -57,6 +59,7 @@ public struct OuterFrameStyle: Identifiable, Hashable, PackableFramePart, Codabl
         self.width = width
         self.depth = depth
         self.materialID = materialID
+        self.sectionProfileID = sectionProfileID
     }
 }
 
@@ -94,4 +97,5 @@ public struct InnerFrameStyle: Identifiable, Hashable, PackableFramePart, Codabl
     public var name: String
     public var width: CGFloat
     public var materialID: String
+    public var sectionProfileID: String?
 }

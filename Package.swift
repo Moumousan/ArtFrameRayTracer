@@ -6,15 +6,27 @@ import PackageDescription
 let package = Package(
     name: "ArtFrameRayTracer",
     platforms: [
-        .iOS(.v17),
-        .macOS(.v14)
+        .iOS(.v18),
+        .macOS(.v15)
     ],
     products: [
         .library(
+            name: "ArtFrameCore",
+            targets: ["ArtFrameCore"]
+        ),
+        .library(
             name: "ArtFrameRayTracer",
             targets: ["ArtFrameRayTracer"]
+        ),
+        .library(
+            name: "ArtFrameUI",
+            targets: ["ArtFrameUI"]        //
         )
     ],
+    dependencies: [
+            // ここを追加（パスは実際の配置に合わせて調整）
+            .package(path: "../SecureDeliveryCore")
+        ],
     targets: [
         // 共通型・セッション・protocol
         .target(
@@ -46,6 +58,16 @@ let package = Package(
                 "ArtFrameRayTracerMetal"
             ],
             path: "Sources/ArtFrameRayTracer"
+        ),
+        
+        //  額装UI
+        .target(
+            name: "ArtFrameUI",
+            dependencies: [
+                "ArtFrameCore",
+                "ArtFrameRayTracer"   // ← エンジンを使う
+            ],
+            path: "Sources/ArtFrameUI"
         ),
 
         .testTarget(

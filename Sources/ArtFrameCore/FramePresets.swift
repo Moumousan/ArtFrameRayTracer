@@ -18,7 +18,8 @@ public enum DefaultPacks {
             name: "Kumiko Natural",
             width: 0.12,
             depth: 0.05,
-            materialID: "mat-wood-kumiko"
+            materialID: "mat-wood-kumiko",
+            sectionProfileID: "outer-simple-flat"
         ),
         .init(
             id: "outer-modern-black",
@@ -27,7 +28,8 @@ public enum DefaultPacks {
             name: "Modern Black",
             width: 0.08,
             depth: 0.03,
-            materialID: "metal-anodized-black"
+            materialID: "metal-anodized-black",
+            sectionProfileID: "outer-simple-kamaboko"
         ),
         .init(
             id: "outer-baroque-gold",
@@ -47,6 +49,7 @@ public enum DefaultPacks {
             width: 0.10,
             depth: 0.02,
             materialID: "paper-stamp"
+            // sectionProfileID は未設定でもよい
         )
     ]
 
@@ -84,7 +87,8 @@ public enum DefaultPacks {
             category: .simple,
             name: "Gold Thin",
             width: 0.02,
-            materialID: "metal-gold-thin"
+            materialID: "metal-gold-thin",
+            sectionProfileID: "inner-thin-flat"
         ),
         .init(
             id: "inner-round",
@@ -92,7 +96,8 @@ public enum DefaultPacks {
             category: .shape,
             name: "Round",
             width: 0.025,
-            materialID: "coating-round"
+            materialID: "coating-round",
+            sectionProfileID: "inner-thin-round"
         ),
         .init(
             id: "inner-sharp",
@@ -100,7 +105,8 @@ public enum DefaultPacks {
             category: .shape,
             name: "Sharp",
             width: 0.02,
-            materialID: "coating-sharp"
+            materialID: "coating-sharp",
+            sectionProfileID: "inner-thin-sharp"
         )
     ]
 }
