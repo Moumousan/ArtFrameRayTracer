@@ -148,3 +148,74 @@ public struct FrameLibrary {
         return result
     }
 }
+
+
+// ComboCore Mapping
+// MARK: - ArtFrame 専用 ComboSlot
+
+public enum FrameSlot: String, ComboSlot {
+    case outer
+    case mat
+    case inner
+
+    public var displayName: String {
+        switch self {
+        case .outer: "Outer"
+        case .mat:   "Mat"
+        case .inner: "Inner"
+        }
+    }
+}
+
+// MARK: - DefaultPacks → ComboPart マッピング
+
+public extension DefaultPacks {
+
+    /// OuterFrameStyle 群を ComboPart<FrameSlot> に変換
+    static var outerComboParts: [ComboPart<FrameSlot>] {
+        outer.map { outerStyle in
+            ComboPart(
+                id: outerStyle.id,
+                slot: .outer,
+                name: outerStyle.name,
+                meta: [
+                    "materialID": outerStyle.materialID,
+                    "category": outerStyle.category.rawValue,
+                    "packID": outerStyle.packID.rawValue
+                ]
+            )
+        }
+    }
+
+    /// MatStyle 群を ComboPart<FrameSlot> に変換
+    static var matComboParts: [ComboPart<FrameSlot>] {
+        mats.map { mat in
+            ComboPart(
+                id: mat.id,
+                slot: .mat,
+                name: mat.name,
+                meta: [
+                    "materialID": mat.materialID,
+                    "category": mat.category.rawValue,
+                    "packID": mat.packID.rawValue
+                ]
+            )
+        }
+    }
+
+    /// InnerFrameStyle 群を ComboPart<FrameSlot> に変換
+    static var innerComboParts: [ComboPart<FrameSlot>] {
+        inners.map { inner in
+            ComboPart(
+                id: inner.id,
+                slot: .inner,
+                name: inner.name,
+                meta: [
+                    "materialID": inner.materialID,
+                    "category": inner.category.rawValue,
+                    "packID": inner.packID.rawValue
+                ]
+            )
+        }
+    }
+}
