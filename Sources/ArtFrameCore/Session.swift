@@ -12,24 +12,6 @@ import CoreGraphics
 import Foundation
 import simd
 
-public struct FrameRecipe: Identifiable, Hashable, Codable {
-    public let id: String
-    public var outer: OuterFrameStyle
-    public var mat: MatStyle?
-    public var inner: InnerFrameStyle?
-
-    public init(
-        id: String,
-        outer: OuterFrameStyle,
-        mat: MatStyle? = nil,
-        inner: InnerFrameStyle? = nil
-    ) {
-        self.id = id
-        self.outer = outer
-        self.mat = mat
-        self.inner = inner
-    }
-}
 
 public struct FrameLockInfo: Codable, Hashable {
     public let lockedAt: Date

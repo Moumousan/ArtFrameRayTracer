@@ -111,62 +111,6 @@ public enum DefaultPacks {
     ]
 }
 
-// 全組み合わせを生成するヘルパ
-public struct FrameLibrary {
-    public var outers: [OuterFrameStyle]
-    public var mats: [MatStyle]
-    public var inners: [InnerFrameStyle]
-
-    public init(
-        outers: [OuterFrameStyle] = DefaultPacks.outer,
-        mats: [MatStyle] = DefaultPacks.mats,
-        inners: [InnerFrameStyle] = DefaultPacks.inners
-    ) {
-        self.outers = outers
-        self.mats = mats
-        self.inners = inners
-    }
-
-    public func generateAllRecipes() -> [FrameRecipe] {
-        var result: [FrameRecipe] = []
-        var counter = 0
-
-        let matsWithNone: [MatStyle?] = [nil] + mats.map { Optional($0) }
-        let innersWithNone: [InnerFrameStyle?] = [nil] + inners.map { Optional($0) }
-
-        for outer in outers {
-            for mat in matsWithNone {
-                for inner in innersWithNone {
-                    counter += 1
-                    let id = "frame-\(counter)"
-                    result.append(
-                        FrameRecipe(id: id, outer: outer, mat: mat, inner: inner)
-                    )
-                }
-            }
-        }
-        return result
-    }
-}
-
-
-// ComboCore Mapping
-// MARK: - ArtFrame 専用 ComboSlot
-
-public enum FrameSlot: String, ComboSlot {
-    case outer
-    case mat
-    case inner
-
-    public var displayName: String {
-        switch self {
-        case .outer: "Outer"
-        case .mat:   "Mat"
-        case .inner: "Inner"
-        }
-    }
-}
-
 // MARK: - DefaultPacks → ComboPart マッピング
 
 public extension DefaultPacks {
