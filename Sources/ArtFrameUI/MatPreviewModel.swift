@@ -24,7 +24,7 @@ import AppKit
 /// など、複数のビューから参照される前提。
 ///
 @MainActor
-final class MatPreviewModel: ObservableObject {
+public final class MatPreviewModel: ObservableObject {
 
     // MARK: - Frame Thickness
 
