@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 import ArtFrameCore
+import ArtFrameRayTracer
 #if os(macOS)
 import AppKit
 #endif
@@ -98,6 +99,9 @@ public final class MatPreviewModel: ObservableObject {
         guard let photo else { return nil }
         return Image(nsImage: photo)
     }
+    
+     // MARK: - initializer
+    public init(){}
 
     /// 現在の設定で簡易的なグラデーション画像を生成する。
     /// 後で ArtFrameRayTracer の本格レイトレに差し替える前提。
