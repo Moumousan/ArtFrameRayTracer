@@ -1,5 +1,4 @@
 // swift-tools-version: 6.2
-// The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
@@ -20,19 +19,18 @@ let package = Package(
         ),
         .library(
             name: "ArtFrameUI",
-            targets: ["ArtFrameUI"]        //
+            targets: ["ArtFrameUI"]
         )
     ],
     dependencies: [
-            // ここを追加（パスは実際の配置に合わせて調整）
-            .package(path: "../SecureDeliveryCore"),
-            .package(
-                        url: "https://github.com/Moumousan/ModernButtonKit2.git",
-                        from: "0.5.0"
-                    ),
-        ],
+        .package(
+            url: "https://github.com/Moumousan/ModernButtonKit2.git",
+            from: "0.5.0"
+        ),
+        // .package(path: "../SecureDeliveryCore"),  // ← 必要なら復活
+    ],
     targets: [
-        // 共通型・セッション・protocol
+        // 共通ロジック
         .target(
             name: "ArtFrameCore",
             path: "Sources/ArtFrameCore"
@@ -45,15 +43,14 @@ let package = Package(
             path: "Sources/ArtFrameRayTracerCPU"
         ),
 
-        // Metal レンダラー（中身はあとで）
+        // Metal レンダラー
         .target(
             name: "ArtFrameRayTracerMetal",
             dependencies: ["ArtFrameCore"],
             path: "Sources/ArtFrameRayTracerMetal"
-            // resources: [.process("Shaders")] などは後で
         ),
 
-        // 公開 Facade
+        // レイトレ本体（UI 依存なし）
         .target(
             name: "ArtFrameRayTracer",
             dependencies: [
@@ -63,28 +60,17 @@ let package = Package(
             ],
             path: "Sources/ArtFrameRayTracer"
         ),
-        
-        //  額装UI
+
+        // 額装 UI（ここだけ MBG 依存）
         .target(
             name: "ArtFrameUI",
             dependencies: [
                 "ArtFrameCore",
-                "ArtFrameRayTracer"   // ← エンジンを使う
+                "ArtFrameRayTracer",
+               // .product(name: "ModernButtonKit2", package: "ModernButtonKit2")
             ],
             path: "Sources/ArtFrameUI"
         ),
-        // RayTracer 本体（ここから MBG を使う想定なら依存関係に入れる）
-                .target(
-                    name: "ArtFrameRayTracer",
-                    dependencies: [
-                        "ArtFrameCore",
-                        // ★ ModernButtonKit2 のプロダクト名
-                        .product(
-                            name: "ModernButtonKit2",
-                            package: "ModernButtonKit2"
-                        ),
-                    ]
-                ),
 
         .testTarget(
             name: "ArtFrameRayTracerTests",
