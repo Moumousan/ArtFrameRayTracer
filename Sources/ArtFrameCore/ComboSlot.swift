@@ -69,7 +69,7 @@ where S: ComboSlot, Part: Hashable & Codable {
 
 /// 任意スロット S に属する 1 パーツ。
 /// 額縁なら「Outer 用の◯◯」「Mat 用の△△」みたいなイメージ。
-public struct ComboPart<S: ComboSlot>: Identifiable, Hashable, Codable {
+public struct ComboPart<S: ComboSlot & Sendable>: Identifiable, Hashable, Codable, Sendable {
     public let id: String        // 例: "outer-wood-001"
     public let slot: S           // どのスロット用か (FrameSlot.outer など)
     public let name: String      // UI 表示名
@@ -87,3 +87,4 @@ public struct ComboPart<S: ComboSlot>: Identifiable, Hashable, Codable {
         self.meta = meta
     }
 }
+

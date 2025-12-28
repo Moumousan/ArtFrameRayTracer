@@ -25,7 +25,11 @@ let package = Package(
     ],
     dependencies: [
             // ここを追加（パスは実際の配置に合わせて調整）
-            .package(path: "../SecureDeliveryCore")
+            .package(path: "../SecureDeliveryCore"),
+            .package(
+                        url: "https://github.com/Moumousan/ModernButtonKit2.git",
+                        from: "0.5.0"
+                    ),
         ],
     targets: [
         // 共通型・セッション・protocol
@@ -69,6 +73,18 @@ let package = Package(
             ],
             path: "Sources/ArtFrameUI"
         ),
+        // RayTracer 本体（ここから MBG を使う想定なら依存関係に入れる）
+                .target(
+                    name: "ArtFrameRayTracer",
+                    dependencies: [
+                        "ArtFrameCore",
+                        // ★ ModernButtonKit2 のプロダクト名
+                        .product(
+                            name: "ModernButtonKit2",
+                            package: "ModernButtonKit2"
+                        ),
+                    ]
+                ),
 
         .testTarget(
             name: "ArtFrameRayTracerTests",

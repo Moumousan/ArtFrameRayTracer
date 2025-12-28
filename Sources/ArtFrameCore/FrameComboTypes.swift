@@ -21,7 +21,7 @@ import Foundation
 // MARK: - ComboSlot / Identifiable
 /// 額縁の 3 スロット（Outer / Mat / Inner）
 /// 額縁の 3 スロット（Outer / Mat / Inner）
-public enum FrameSlot: String, ComboSlot {
+public enum FrameSlot: String, ComboSlot, Sendable {
     case outer
     case mat
     case inner
