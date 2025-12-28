@@ -49,8 +49,6 @@ public typealias FrameLibrary = ComboLibrary<FrameSlot, FramePart>
 
 public extension ComboLibrary where S == FrameSlot, Part == FramePart {
 
-    /// Outer は必須、Mat/Inner は nil を含めた全組み合わせで
-    /// FrameRecipe を生成して self.recipes に詰める。
     mutating func generateAllFrameRecipes(
         idPrefix: String = "frame-"
     ) {
@@ -70,14 +68,17 @@ public extension ComboLibrary where S == FrameSlot, Part == FramePart {
                 for inner in innersWithNone {
                     counter += 1
 
+                    // 一旦 Optional 辞書で組み立てる
                     var parts: [FrameSlot: FramePart?] = [.outer: outer]
                     parts[.mat]   = mat
                     parts[.inner] = inner
 
-                    // ※ FrameRecipe のイニシャライザに合わせてここは調整して下さい
+                    // ★ ここで nil を落として非オプショナル辞書にする
+                    let nonNilParts: [FrameSlot: FramePart] = parts.compactMapValues { $0 }
+
                     let recipe = FrameRecipe(
                         id: "\(idPrefix)\(counter)",
-                        parts: parts as! [FrameSlot : FramePart]
+                        parts: nonNilParts
                     )
                     all.append(recipe)
                 }
