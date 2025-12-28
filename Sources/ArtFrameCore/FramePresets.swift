@@ -119,7 +119,7 @@ public enum DefaultPacks {
 public extension DefaultPacks {
 
     /// Outer 用のパーツ群を ComboPart<FrameSlot> に変換
-    public static var outerComboParts: [FramePart] {
+    static var outerComboParts: [FramePart] {
         outer.map { style in
             ComboPart(
                 id: style.id,
@@ -138,7 +138,7 @@ public extension DefaultPacks {
     }
 
     /// Mat 用のパーツ群
-    public static var matComboParts: [FramePart] {
+    static var matComboParts: [FramePart] {
         mats.map { style in
             ComboPart(
                 id: style.id,
@@ -155,7 +155,7 @@ public extension DefaultPacks {
     }
 
     /// Inner 用のパーツ群
-    public static var innerComboParts: [FramePart] {
+    static var innerComboParts: [FramePart] {
         inners.map { style in
             ComboPart(
                 id: style.id,
@@ -176,7 +176,7 @@ public extension DefaultPacks {
 public extension DefaultPacks {
 
     /// スロット別に FramePart をまとめた辞書
-    public static var framePartsBySlot: [FrameSlot: [FramePart]] {
+    static var framePartsBySlot: [FrameSlot: [FramePart]] {
         [
             .outer: outerComboParts,
             .mat:   matComboParts,
@@ -186,7 +186,7 @@ public extension DefaultPacks {
 
     /// v0.x の「標準プリセット全部入り」ライブラリ
     /// - パーツもレシピも両方入った状態で返す
-    public static var initialFrameLibrary: FrameLibrary {
+    static var initialFrameLibrary: FrameLibrary {
         var lib = FrameLibrary(partsBySlot: framePartsBySlot)
         lib.generateAllFrameRecipes()          // ← ここでレシピを自動生成
         return lib
