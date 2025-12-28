@@ -1,0 +1,15 @@
+{
+  "originHash" : "969a2561486047ddf894e3cd255a5e7bc5260aea54dd52d74183f362be1e89f3",
+  "pins" : [
+    {
+      "identity" : "modernbuttonkit2",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Moumousan/ModernButtonKit2.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "be62fa78aa6fbb3cade069d2e12de0ce12901f2e"
+      }
+    }
+  ],
+  "version" : 3
+}
