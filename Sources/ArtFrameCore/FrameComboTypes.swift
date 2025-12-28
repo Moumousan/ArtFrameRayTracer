@@ -13,6 +13,7 @@
 
 import Foundation
 
+
 /// 額縁の 3 スロット（Outer / Mat / Inner）
 ///
 /// ComboSlot は「一般概念」なので、
@@ -44,3 +45,45 @@ public typealias FrameRecipe = ComboRecipe<FrameSlot, FramePart>
 
 /// 額縁パーツ & レシピのライブラリ
 public typealias FrameLibrary = ComboLibrary<FrameSlot, FramePart>
+
+
+public extension ComboLibrary where S == FrameSlot, Part == FramePart {
+
+    /// Outer は必須、Mat/Inner は nil を含めた全組み合わせで
+    /// FrameRecipe を生成して self.recipes に詰める。
+    mutating func generateAllFrameRecipes(
+        idPrefix: String = "frame-"
+    ) {
+        let outers = partsBySlot[.outer] ?? []
+        let mats   = partsBySlot[.mat]   ?? []
+        let inners = partsBySlot[.inner] ?? []
+
+        // 「なし」込みの候補
+        let matsWithNone:   [FramePart?] = [nil] + mats
+        let innersWithNone: [FramePart?] = [nil] + inners
+
+        var all: [FrameRecipe] = []
+        var counter = 0
+
+        for outer in outers {
+            for mat in matsWithNone {
+                for inner in innersWithNone {
+                    counter += 1
+
+                    var parts: [FrameSlot: FramePart?] = [.outer: outer]
+                    parts[.mat]   = mat
+                    parts[.inner] = inner
+
+                    // ※ FrameRecipe のイニシャライザに合わせてここは調整して下さい
+                    let recipe = FrameRecipe(
+                        id: "\(idPrefix)\(counter)",
+                        parts: parts as! [FrameSlot : FramePart]
+                    )
+                    all.append(recipe)
+                }
+            }
+        }
+
+        self.recipes = all
+    }
+}

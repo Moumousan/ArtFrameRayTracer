@@ -9,6 +9,7 @@
 
 import CoreGraphics
 
+
 public enum DefaultPacks {
     public static let outer: [OuterFrameStyle] = [
         .init(
@@ -113,53 +114,81 @@ public enum DefaultPacks {
 
 // MARK: - DefaultPacks → ComboPart マッピング
 
+// MARK: - DefaultPacks → FramePart 変換
+
 public extension DefaultPacks {
 
-    /// OuterFrameStyle 群を ComboPart<FrameSlot> に変換
-    static var outerComboParts: [ComboPart<FrameSlot>] {
-        outer.map { outerStyle in
+    /// Outer 用のパーツ群を ComboPart<FrameSlot> に変換
+    static var outerComboParts: [FramePart] {
+        outer.map { style in
             ComboPart(
-                id: outerStyle.id,
+                id: style.id,
                 slot: .outer,
-                name: outerStyle.name,
+                name: style.name,
                 meta: [
-                    "materialID": outerStyle.materialID,
-                    "category": outerStyle.category.rawValue,
-                    "packID": outerStyle.packID.rawValue
+                    "packID": style.packID.rawValue,
+                    "category": style.category.rawValue,
+                    "materialID": style.materialID,
+                    "sectionProfileID": style.sectionProfileID ?? "",
+                    "width": "\(style.width)",
+                    "depth": "\(style.depth)"
                 ]
             )
         }
     }
 
-    /// MatStyle 群を ComboPart<FrameSlot> に変換
-    static var matComboParts: [ComboPart<FrameSlot>] {
-        mats.map { mat in
+    /// Mat 用のパーツ群
+    static var matComboParts: [FramePart] {
+        mats.map { style in
             ComboPart(
-                id: mat.id,
+                id: style.id,
                 slot: .mat,
-                name: mat.name,
+                name: style.name,
                 meta: [
-                    "materialID": mat.materialID,
-                    "category": mat.category.rawValue,
-                    "packID": mat.packID.rawValue
+                    "packID": style.packID.rawValue,
+                    "category": style.category.rawValue,
+                    "materialID": style.materialID,
+                    "margin": "\(style.margin)"
                 ]
             )
         }
     }
 
-    /// InnerFrameStyle 群を ComboPart<FrameSlot> に変換
-    static var innerComboParts: [ComboPart<FrameSlot>] {
-        inners.map { inner in
+    /// Inner 用のパーツ群
+    static var innerComboParts: [FramePart] {
+        inners.map { style in
             ComboPart(
-                id: inner.id,
+                id: style.id,
                 slot: .inner,
-                name: inner.name,
+                name: style.name,
                 meta: [
-                    "materialID": inner.materialID,
-                    "category": inner.category.rawValue,
-                    "packID": inner.packID.rawValue
+                    "packID": style.packID.rawValue,
+                    "category": style.category.rawValue,
+                    "materialID": style.materialID,
+                    "sectionProfileID": style.sectionProfileID ?? "",
+                    "width": "\(style.width)"
                 ]
             )
         }
+    }
+}
+
+public extension DefaultPacks {
+
+    /// スロット別に FramePart をまとめた辞書
+    static var framePartsBySlot: [FrameSlot: [FramePart]] {
+        [
+            .outer: outerComboParts,
+            .mat:   matComboParts,
+            .inner: innerComboParts
+        ]
+    }
+
+    /// v0.x の「標準プリセット全部入り」ライブラリ
+    /// - パーツもレシピも両方入った状態で返す
+    static var initialFrameLibrary: FrameLibrary {
+        var lib = FrameLibrary(partsBySlot: framePartsBySlot)
+        lib.generateAllFrameRecipes()          // ← ここでレシピを自動生成
+        return lib
     }
 }
