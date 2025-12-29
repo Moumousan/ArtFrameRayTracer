@@ -24,6 +24,59 @@ import AppKit
 /// を扱う。
 @MainActor
 public final class MatPreviewModel: ObservableObject {
+      // v0.x 標準プリセット全部入りライブラリ
+        @Published public var frameLibrary: FrameLibrary = DefaultPacks.initialFrameLibrary
+
+        // 各スロットごとの生パーツ（必要なら残しておく）
+        public var outerParts: [FramePart] { frameLibrary.partsBySlot[.outer] ?? [] }
+        public var matParts:   [FramePart] { frameLibrary.partsBySlot[.mat]   ?? [] }
+        public var innerParts: [FramePart] { frameLibrary.partsBySlot[.inner] ?? [] }
+
+        // MARK: - MBG 用モード配列
+
+        public var outerModes: [FramePartMode] {
+            outerParts.map { FramePartMode(slot: .outer, part: $0) }
+        }
+
+        public var matModes: [FramePartMode] {
+            let none = FramePartMode(noneFor: .mat, title: "Choose…")
+            return [none] + matParts.map { FramePartMode(slot: .mat, part: $0) }
+        }
+
+        public var innerModes: [FramePartMode] {
+            let none = FramePartMode(noneFor: .inner, title: "Choose…")
+            return [none] + innerParts.map { FramePartMode(slot: .inner, part: $0) }
+        }
+
+        // MARK: - MBG の選択状態（Binding 先）
+
+        @Published public var selectedOuterMode: FramePartMode
+        @Published public var selectedMatMode:   FramePartMode
+        @Published public var selectedInnerMode: FramePartMode
+
+        // 便利プロパティ（今選ばれている実パーツ）
+        public var selectedOuterPart: FramePart? { selectedOuterMode.part }
+        public var selectedMatPart:   FramePart? { selectedMatMode.part }
+        public var selectedInnerPart: FramePart? { selectedInnerMode.part }
+
+        // MARK: - init
+
+        public init() {
+            let lib = DefaultPacks.initialFrameLibrary
+            self.frameLibrary = lib
+
+            // Outer は必須 → 最初のひとつを選択
+            if let firstOuter = lib.partsBySlot[.outer]?.first {
+                self.selectedOuterMode = FramePartMode(slot: .outer, part: firstOuter)
+            } else {
+                self.selectedOuterMode = FramePartMode(noneFor: .outer, title: "—")
+            }
+
+            // Mat / Inner は「未選択」からスタート
+            self.selectedMatMode   = FramePartMode(noneFor: .mat,   title: "Choose…")
+            self.selectedInnerMode = FramePartMode(noneFor: .inner, title: "Choose…")
+        }
+    }
 
     // MARK: - Thickness (Outer / Mat / Inner)
 
