@@ -85,7 +85,7 @@ public final class MatPreviewModel: ObservableObject {
         matStyles.first { $0.id == selectedMatStyleID } ?? matStyles[0]
     }
 
-      // MARK: -  いま編集中のレーン（O / M / I）
+    // MARK: - いま編集中のレーン（O / M / I）
     @Published public var editingLane: FrameSlot = .outer
 
     // MARK: - Presets (Set A〜E)
@@ -147,8 +147,7 @@ public final class MatPreviewModel: ObservableObject {
     @Published public var customOuterImage: NSImage?
     @Published public var customMatImage:   NSImage?
     @Published public var customInnerImage: NSImage?
-#endif
-
+    #endif
 
     // MARK: - Init
 
