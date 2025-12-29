@@ -141,7 +141,11 @@ public final class MatPreviewModel: ObservableObject {
     #if os(macOS)
     @Published public var photo: NSImage? = nil
     @Published public var raytracedImage: CGImage? = nil
-    #endif
+    @Published public var customOuterImage: NSImage?
+    @Published public var customMatImage:   NSImage?
+    @Published public var customInnerImage: NSImage?
+#endif
+
 
     // MARK: - Init
 
