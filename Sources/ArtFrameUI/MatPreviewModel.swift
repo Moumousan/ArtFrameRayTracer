@@ -85,6 +85,9 @@ public final class MatPreviewModel: ObservableObject {
         matStyles.first { $0.id == selectedMatStyleID } ?? matStyles[0]
     }
 
+      // MARK: -  いま編集中のレーン（O / M / I）
+    @Published public var editingLane: FrameSlot = .outer
+
     // MARK: - Presets (Set A〜E)
 
     /// 現在フォーカスしているプリセット（初期は Set A）
