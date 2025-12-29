@@ -1,33 +1,31 @@
 //
 //  MatPreviewModel.swift
-//  ArtFramePartsStudio
+//  ArtFrameUI
 //
-//  Created by SNI on 2025/12/26.
+//  Created by Kyoto Denno Kogei Kobo-sha on 2025/12/26.
 //
 
 import SwiftUI
 import Combine
 import ArtFrameCore
-import ArtFrameRayTracer
+
 #if os(macOS)
 import AppKit
 #endif
 
-
-/// 工房とビューワが共有する状態
-/// ArtFrame 系アプリで共有する、
-/// 「Outer / Mat / Inner + 写真」の状態モデル。
+/// 工房とビューワ（MatViewerView / DemoFrameView など）が共有する状態モデル。
 ///
-/// - 工房パネル
-/// - 簡易プレビュー
-/// - レイトレ結果プレビュー
-///
-/// など、複数のビューから参照される前提。
-///
+/// v0.x では：
+/// - Outer / Mat / Inner の厚み
+/// - Mat のテクスチャ
+/// - Photo
+/// - 簡易レイトレ結果
+/// - Set A〜E のプリセット
+/// を扱う。
 @MainActor
 public final class MatPreviewModel: ObservableObject {
 
-    // MARK: - Frame Thickness
+    // MARK: - Thickness (Outer / Mat / Inner)
 
     @Published public var outerThickness: CGFloat = 40
     @Published public var matThickness: CGFloat = 80
@@ -52,57 +50,82 @@ public final class MatPreviewModel: ObservableObject {
     public var selectedMatStyle: MatTextureStyle {
         matStyles.first { $0.id == selectedMatStyleID } ?? matStyles[0]
     }
-    
-    /// v0.x 標準プリセット全部入りライブラリ
-    @Published public var frameLibrary: FrameLibrary = DefaultPacks.initialFrameLibrary
 
-    /// Outer / Mat / Inner 用の候補パーツ
-    public var outerParts: [FramePart] { frameLibrary.partsBySlot[.outer] ?? [] }
-    public var matParts:   [FramePart] { frameLibrary.partsBySlot[.mat]   ?? [] }
-    public var innerParts: [FramePart] { frameLibrary.partsBySlot[.inner] ?? [] }
+    // MARK: - Presets (Set A〜E)
 
-    // MARK: - MBG() 用のモード配列（idle を含む）
+    /// 現在フォーカスしているプリセット（初期は Set A）
+    @Published public var activePreset: FramePresetID = .setA
 
-    public var outerModes: [FramePartMode] {
-        [.idle] + outerParts.map { .outer($0) }
+    /// Set A〜E の状態
+    @Published public var presets: [FramePresetID: FramePreset] = [:]
+
+    /// 現在の Thickness + MatTexture をプリセットとして保存
+    public func saveCurrentState(to presetID: FramePresetID) {
+        let preset = FramePreset(
+            id: presetID,
+            outerThickness: outerThickness,
+            matThickness: matThickness,
+            innerThickness: innerThickness,
+            matStyleID: selectedMatStyleID
+        )
+        presets[presetID] = preset
     }
 
-    public var matModes: [FramePartMode] {
-        [.idle] + matParts.map { .mat($0) }
+    /// プリセットの状態を現在の編集状態へロード
+    public func loadPreset(_ presetID: FramePresetID) {
+        guard let preset = presets[presetID] else { return }
+        outerThickness = preset.outerThickness
+        matThickness = preset.matThickness
+        innerThickness = preset.innerThickness
+        selectedMatStyleID = preset.matStyleID
     }
 
-    public var innerModes: [FramePartMode] {
-        [.idle] + innerParts.map { .inner($0) }
+    /// UI 用の説明テキスト
+    public var currentSetDescription: String {
+        let preset = presets[activePreset]
+
+        let matName: String = {
+            if let id = preset?.matStyleID,
+               let s = matStyles.first(where: { $0.id == id }) {
+                return s.displayName
+            }
+            return selectedMatStyle.displayName
+        }()
+
+        let outerText = String(format: "%.0f pt", preset?.outerThickness ?? outerThickness)
+        let matText   = String(format: "%.0f pt", preset?.matThickness   ?? matThickness)
+        let innerText = String(format: "%.0f pt", preset?.innerThickness ?? innerThickness)
+
+        return """
+        Outer: \(outerText), Mat: \(matText), Inner: \(innerText)
+        Mat Texture: \(matName)
+        """
     }
 
-    // MARK: - MBG() 用の選択状態
-
-    @Published public var selectedOuterMode: FramePartMode = .idle
-    @Published public var selectedMatMode:   FramePartMode = .idle
-    @Published public var selectedInnerMode: FramePartMode = .idle
-
-    /// 現在選択されている実パーツ（必要になったら使う）
-    public var selectedOuterPart: FramePart? { selectedOuterMode.part }
-    public var selectedMatPart:   FramePart? { selectedMatMode.part }
-    public var selectedInnerPart: FramePart? { selectedInnerMode.part }
-
-    // MARK: - Photo & Rendered Image (macOS)
+    // MARK: - Photo & Raytraced Image (macOS)
 
     #if os(macOS)
     @Published public var photo: NSImage? = nil
     @Published public var raytracedImage: CGImage? = nil
+    #endif
 
-    // MARK: - Photo helper and dummy RayTracer
+    // MARK: - Init
 
-    /// 選択中の写真を SwiftUI.Image として参照したい場合に使うヘルパ
-    public var photoImage: Image? {
-        guard let photo else { return nil }
-        return Image(nsImage: photo)
+    public init() {
+        // 起動直後は「現在の状態」をそのまま Set A にコピーしておく
+        let initial = FramePreset(
+            id: .setA,
+            outerThickness: outerThickness,
+            matThickness: matThickness,
+            innerThickness: innerThickness,
+            matStyleID: selectedMatStyleID
+        )
+        self.presets = [.setA: initial]
     }
-    
-     // MARK: - initializer
-    public init(){}
 
+    // MARK: - Dummy RayTracer (v0.x)
+
+    #if os(macOS)
     /// 現在の設定で簡易的なグラデーション画像を生成する。
     /// 後で ArtFrameRayTracer の本格レイトレに差し替える前提。
     public func renderWithRayTracer(targetSize: CGSize) {
@@ -152,4 +175,3 @@ public final class MatPreviewModel: ObservableObject {
     }
     #endif
 }
-
