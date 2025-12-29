@@ -1,77 +1,43 @@
 //
 //  FramePartMode.swift
-//  ArtFrameRayTracer
+//  ArtFrameUI
 //
 //  Created by SNI on 2025/12/28.
 //
-//
-// MBG() 用のモード。
-// 1つの FramePart をラップしつつ、.idle も持てる汎用モード。
 
 import Foundation
-import ArtFrameCore          // FramePart / FrameSlot を使う
-import ModernButtonKit2      // MBG のプロトコル'SelectableModeProtocol'を使う
+import ArtFrameCore          // FramePart / FrameSlot
+import ModernButtonKit2      // SelectableModeProtocol
 
-/// MBG のレーンで使う「どのパーツを選択しているか」状態
-public enum FramePartMode: Hashable {
-    case idle
-    case outer(FramePart)
-    case mat(FramePart)
-    case inner(FramePart)
-}
+/// MBG() で使う「額縁パーツ選択用モード」
+public struct FramePartMode: Identifiable, Hashable, SelectableModeProtocol {
 
-// MARK: - 便利プロパティ
+    /// SelectableModeProtocol
+    public let id: String
+    public let displayName: String
 
-public extension FramePartMode {
+    /// Outer / Mat / Inner のどれ用か
+    public let slot: FrameSlot
 
-    /// 対応するスロット（outer / mat / inner）
-    var slot: FrameSlot? {
-        switch self {
-        case .idle:          return nil
-        case .outer:         return .outer
-        case .mat:           return .mat
-        case .inner:         return .inner
-        }
+    /// 対応するパーツ（「なし」の場合は nil）
+    public let part: FramePart?
+
+    // MARK: - 初期化
+
+    /// 実際の FramePart から生成
+    public init(slot: FrameSlot, part: FramePart) {
+        self.slot = slot
+        self.part = part
+        self.id = part.id
+        self.displayName = part.name
     }
 
-    /// 対応するパーツ（未選択なら nil）
-    var part: FramePart? {
-        switch self {
-        case .idle:
-            return nil
-        case .outer(let p),
-             .mat(let p),
-             .inner(let p):
-            return p
-        }
-    }
-}
-
-// MARK: - MBG(ModernButtonKit2) 用ブリッジ
-
-extension FramePartMode: SelectableModeProtocol {
-
-    public var id: String {
-        switch self {
-        case .idle:
-            return "idle"
-        case .outer(let part):
-            return "outer-\(part.id)"
-        case .mat(let part):
-            return "mat-\(part.id)"
-        case .inner(let part):
-            return "inner-\(part.id)"
-        }
-    }
-
-    public var displayName: String {
-        switch self {
-        case .idle:
-            return "—"
-        case .outer(let part),
-             .mat(let part),
-             .inner(let part):
-            return part.name
-        }
+    /// 「なし」用のモード（Mat / Inner 用）
+    /// title を変えれば「Choose…」など好きなラベルにできる
+    public init(noneFor slot: FrameSlot, title: String = "Choose…") {
+        self.slot = slot
+        self.part = nil
+        self.id = "none-\(slot.rawValue)"
+        self.displayName = title
     }
 }
