@@ -87,6 +87,10 @@ public final class MatPreviewModel: ObservableObject {
 
     // MARK: - いま編集中のレーン（O / M / I）
     @Published public var editingLane: FrameSlot = .outer
+    
+    
+    // MARK: - Join Mode (O/M/I 全体に適用)”
+    @Published public var joinMode: JoinMode = .butt
 
     // MARK: - Presets (Set A〜E)
 
