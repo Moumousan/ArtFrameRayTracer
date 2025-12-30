@@ -5,6 +5,7 @@
 
 import SwiftUI
 import ModernButtonKit2
+import ArtFrameCore
 
 public struct JoinModePickerView: View {
     public let title: String

@@ -4,8 +4,9 @@
 //
 
 import Foundation
+import ModernButtonKit2
 
-public enum JoinMode: String, CaseIterable, Identifiable, Hashable {
+public enum JoinMode: String, CaseIterable, Identifiable, Hashable, SelectableModeProtocol {
     case butt     // 直交で突き当て
     case miter45  // 45度でカットして接合
 
