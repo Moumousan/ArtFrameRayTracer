@@ -162,7 +162,7 @@ public final class MatPreviewModel: ObservableObject {
     public func renderWithRayTracer(targetSize: CGSize) {
         let width  = Int(targetSize.width)
         let height = Int(targetSize.height)
-
+        
         guard let ctx = CGContext(
             data: nil,
             width: width,
@@ -175,14 +175,14 @@ public final class MatPreviewModel: ObservableObject {
             raytracedImage = nil
             return
         }
-
+        
         let rect = CGRect(origin: .zero, size: targetSize)
         ctx.setFillColor(CGColor(gray: 0.10, alpha: 1.0))
         ctx.fill(rect)
-
+        
         let colorSpace = CGColorSpaceCreateDeviceRGB()
         let colors: [CGColor] = [
             CGColor(gray: 0.85, alpha: 1.0),
             CGColor(gray: 0.20, alpha: 1.0)
         ]
-
+    }
