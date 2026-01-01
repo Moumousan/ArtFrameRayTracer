@@ -21,7 +21,7 @@ import ModernButtonKit2
 /// プリセットのスロットID（Set A〜E）
 ///
 /// - UI では MBG() のモードとして使う想定
-public enum FramePresetID: String, CaseIterable, Identifiable, SelectableModeProtocol {
+public enum FramePresetID: String, CaseIterable, Identifiable, SelectableModeProtocol, Codable  {
     case setA
     case setB
     case setC
@@ -58,7 +58,7 @@ public enum FramePresetID: String, CaseIterable, Identifiable, SelectableModePro
 /// - ライティング条件
 /// - Photo の差し替え etc.
 /// を追加拡張していけるようにしておく。
-public struct FramePreset: Identifiable {
+public struct FramePreset: Identifiable, Codable  {
     public let id: FramePresetID
 
     public var outerThickness: CGFloat

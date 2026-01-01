@@ -88,6 +88,9 @@ public final class MatPreviewModel: ObservableObject {
     @Published public var activePreset: FramePresetID = .setA
     @Published public var presets: [FramePresetID: FramePreset] = [:]
     
+    private let presetsKey = "MatPreviewModel.presets.v1"
+    private let activePresetKey = "MatPreviewModel.activePreset.v1"
+    
     public func saveCurrentState(to presetID: FramePresetID) {
         let preset = FramePreset(
             id: presetID,
@@ -97,6 +100,7 @@ public final class MatPreviewModel: ObservableObject {
             matStyleID: selectedMatStyleID
         )
         presets[presetID] = preset
+        persistPresets()
     }
     
     public func loadPreset(_ presetID: FramePresetID) {
@@ -105,6 +109,8 @@ public final class MatPreviewModel: ObservableObject {
         matThickness = preset.matThickness
         innerThickness = preset.innerThickness
         selectedMatStyleID = preset.matStyleID
+        activePreset = presetID
+        persistActivePreset()
     }
     
     public var currentSetDescription: String {
@@ -148,14 +154,32 @@ public final class MatPreviewModel: ObservableObject {
         self.selectedMatMode   = FramePartMode(noneFor: .mat,   title: "Choose…")
         self.selectedInnerMode = FramePartMode(noneFor: .inner, title: "Choose…")
         
-        let initial = FramePreset(
-            id: .setA,
-            outerThickness: outerThickness,
-            matThickness: matThickness,
-            innerThickness: innerThickness,
-            matStyleID: selectedMatStyleID
-        )
-        self.presets = [.setA: initial]
+        // 1) 既存保存を読み込む
+        restorePresets()
+        restoreActivePreset()
+        
+        // 2) 何も無ければ初期プリセットを用意
+        if presets.isEmpty {
+            let initial = FramePreset(
+                id: .setA,
+                outerThickness: outerThickness,
+                matThickness: matThickness,
+                innerThickness: innerThickness,
+                matStyleID: selectedMatStyleID
+            )
+            self.presets = [.setA: initial]
+            self.activePreset = .setA
+            persistPresets()
+            persistActivePreset()
+        }
+        
+        // 3) アクティブセットが存在すれば内容を反映
+        if let preset = presets[activePreset] {
+            outerThickness = preset.outerThickness
+            matThickness = preset.matThickness
+            innerThickness = preset.innerThickness
+            selectedMatStyleID = preset.matStyleID
+        }
     }
     
 #if os(macOS)
@@ -189,4 +213,44 @@ public final class MatPreviewModel: ObservableObject {
         _ = colors
     }
 #endif
+    
+    // MARK: - Persistence
+    private func persistPresets() {
+        do {
+            let dict = Dictionary(uniqueKeysWithValues: presets.map { ($0.key.rawValue, $0.value) })
+            let data = try JSONEncoder().encode(dict)
+            UserDefaults.standard.set(data, forKey: presetsKey)
+        } catch {
+            // 必要に応じてログ
+            // print("Failed to save presets: \(error)")
+        }
+    }
+    
+    private func restorePresets() {
+        guard let data = UserDefaults.standard.data(forKey: presetsKey) else { return }
+        do {
+            let decoded = try JSONDecoder().decode([String: FramePreset].self, from: data)
+            var mapped: [FramePresetID: FramePreset] = [:]
+            for (key, preset) in decoded {
+                if let id = FramePresetID(rawValue: key) {
+                    mapped[id] = preset
+                }
+            }
+            self.presets = mapped
+        } catch {
+            // print("Failed to load presets: \(error)")
+        }
+    }
+    
+    private func persistActivePreset() {
+        UserDefaults.standard.set(activePreset.rawValue, forKey: activePresetKey)
+    }
+    
+    private func restoreActivePreset() {
+        if let raw = UserDefaults.standard.string(forKey: activePresetKey),
+           let id = FramePresetID(rawValue: raw) {
+            self.activePreset = id
+        }
+    }
 }
+
