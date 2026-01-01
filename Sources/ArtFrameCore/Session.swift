@@ -44,6 +44,39 @@ public struct LightingConfig: Codable, Hashable {
         self.keyLightIntensity = keyLightIntensity
         self.ambientIntensity = ambientIntensity
     }
+
+    private enum CodingKeys: String, CodingKey {
+        case presetID
+        case keyLightDirection
+        case keyLightIntensity
+        case ambientIntensity
+    }
+
+    public init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        presetID = try c.decode(String.self, forKey: .presetID)
+        // Decode SIMD3<Float> as array of 3 Floats for portability
+        let dirArray = try c.decode([Float].self, forKey: .keyLightDirection)
+        if dirArray.count == 3 {
+            keyLightDirection = SIMD3<Float>(dirArray[0], dirArray[1], dirArray[2])
+        } else {
+            throw DecodingError.dataCorruptedError(
+                forKey: .keyLightDirection,
+                in: c,
+                debugDescription: "keyLightDirection expects 3 elements"
+            )
+        }
+        keyLightIntensity = try c.decode(Float.self, forKey: .keyLightIntensity)
+        ambientIntensity = try c.decode(Float.self, forKey: .ambientIntensity)
+    }
+
+    public func encode(to encoder: Encoder) throws {
+        var c = encoder.container(keyedBy: CodingKeys.self)
+        try c.encode(presetID, forKey: .presetID)
+        try c.encode([keyLightDirection.x, keyLightDirection.y, keyLightDirection.z], forKey: .keyLightDirection)
+        try c.encode(keyLightIntensity, forKey: .keyLightIntensity)
+        try c.encode(ambientIntensity, forKey: .ambientIntensity)
+    }
 }
 
 /// 実画像はアプリ側で管理するので、ここでは識別子のみ
@@ -86,3 +119,4 @@ public struct FramedPhotoSession: Identifiable, Codable {
         return false
     }
 }
+

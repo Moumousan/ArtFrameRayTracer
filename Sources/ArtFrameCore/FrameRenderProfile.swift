@@ -20,7 +20,7 @@ import CoreGraphics
 /// フレーム全体を 1.0 x 1.0 の正方形とみなしたときの、
 /// Outer / Mat / Inner の厚み比率と、
 /// レンダリング解像度ポリシー（最大ピクセル数 & オーバーサンプリング倍率）を表現する。
-public struct FrameRenderProfile: Sendable, Hashable {
+public struct FrameRenderProfile: Sendable, Hashable, Codable {
 
     // MARK: - Layout ratios (0.0 ... 0.5 相当を想定)
 
