@@ -56,6 +56,9 @@ public struct FramedPhotoSession: Identifiable, Codable {
     public var lighting: LightingConfig
     public var status: FrameStatus
 
+    /// フレームレイアウトとレンダリング解像度のポリシー。
+    public var renderProfile: FrameRenderProfile
+
     public init(
         id: UUID = UUID(),
         frame: FrameRecipe,
@@ -63,7 +66,8 @@ public struct FramedPhotoSession: Identifiable, Codable {
         scale: CGFloat = 1.0,
         offset: CGSize = .zero,
         lighting: LightingConfig,
-        status: FrameStatus = .editing
+        status: FrameStatus = .editing,
+        renderProfile: FrameRenderProfile = .default
     ) {
         self.id = id
         self.frame = frame
@@ -72,6 +76,7 @@ public struct FramedPhotoSession: Identifiable, Codable {
         self.offset = offset
         self.lighting = lighting
         self.status = status
+        self.renderProfile = renderProfile
     }
 
     public var isLocked: Bool {
